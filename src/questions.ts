@@ -45,3 +45,42 @@ export const chooseColor = (): Promise<Color> =>
       ],
     },
   ]);
+
+export const askForPasswordValue = async (): Promise<string> => {
+  const response = await prompts({
+    type: "password",
+    name: "passwordValue",
+    message: "New Password?",
+  });
+  return response.passwordValue;
+};
+
+type Action = {
+  command: "get" | "set";
+  passwordName: string;
+};
+export const askForAction = (): Promise<Action> =>
+  prompts([
+    {
+      type: "select",
+      name: "command",
+      message: "Wat willste?",
+      choices: [
+        { title: "Get a password", value: "get" },
+        { title: "Set a password", value: "set" },
+      ],
+    },
+    {
+      type: "text",
+      name: "passwordName",
+      message: "Which password?",
+    },
+  ]);
+export const askForPasswordName = async (): Promise<string> => {
+  const response = await prompts({
+    type: "text",
+    name: "passwordname",
+    message: "What is the name of your Password?",
+  });
+  return response.passwordname;
+};
