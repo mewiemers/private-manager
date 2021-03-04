@@ -4,7 +4,7 @@ let client: MongoClient = null;
 let db: Db = null;
 
 export type PasswordDoc = {
-  name?: string;
+  name: string;
   value: string;
 };
 
@@ -31,17 +31,22 @@ export async function readPasswordDoc(passwordName: string) {
   return await passwordCollection.findOne({ name: passwordName });
 }
 
-export async function updatePasswordDoc(
+export async function updatePasswordValue(
   passwordName: string,
-  passwordDoc: PasswordDoc
+  newPasswordValue: string
 ) {
   const passwordCollection = await getCollection("passwords");
   return await passwordCollection.updateOne(
     { name: passwordName },
-    { $set: passwordDoc }
+    { $set: { value: newPasswordValue } }
   );
 }
-export async function deletePasswordDoc(passwordName: string) {
+export async function deletePasswordDoc(
+  passwordName: string
+): Promise<Boolean> {
   const passwordCollection = await getCollection<PasswordDoc>("passwords");
-  return await passwordCollection.deleteMany({ name: passwordName });
+  const deleteResult = await passwordCollection.deleteOne({
+    name: passwordName,
+  });
+  return deleteResult.deletedCount >= 1;
 }
