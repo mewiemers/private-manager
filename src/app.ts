@@ -1,22 +1,35 @@
-console.log("Hello Mel");
+import { printHelloMessage } from "./message";
+import {
+  askForAge,
+  askConfirm,
+  askForPassword,
+  chooseColor,
+} from "./questions";
 
-// process.argv.forEach((val, index) => {
-//   if (val === "-v") {
-//     console.log("0.1.0");
-//   }
-//   //   console.log(`${index}: ${val}`);
-// });
+printHelloMessage();
 
-// console.log(process.argv.slice(2));
-
-// const args = process.argv.slice(2)
-// const command = args[0]
-
-//destructure
-const [command] = process.argv.slice(2);
-
-if (command === "set") {
-  console.log("set something");
-} else if (command === "get") {
-  console.log("Get something");
-}
+const run = async () => {
+  const age = await askForAge();
+  //   if (!isUnderaged(age)) {
+  //     printUnderaged();
+  //     askfordata();
+  //     return;
+  //   }
+  askForPassword();
+  askConfirm();
+  const choose = await chooseColor();
+  switch (choose.color) {
+    case "#0000ff":
+      "Blue";
+      break;
+    case "#00ff00":
+      "Green";
+      break;
+    case "#ff0000":
+      "Red";
+      break;
+    case "#ffff00":
+      "Yellow";
+  }
+};
+run();
