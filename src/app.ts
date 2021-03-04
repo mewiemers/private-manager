@@ -22,7 +22,6 @@ dotenv.config();
 printHelloMessage();
 
 const run = async () => {
-
   const url = process.env.MONGODB_URL;
 
   try {
@@ -61,7 +60,7 @@ const run = async () => {
   //     break;
   //   case "#ffff00":
   //     "Yellow";
-=======
+
   const age = await askForAge();
   //   if (!isUnderaged(age)) {
   //     printUnderaged();
@@ -84,6 +83,5 @@ const run = async () => {
     case "#ffff00":
       "Yellow";
   }
-
 };
 run();
