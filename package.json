@@ -5,6 +5,7 @@
   "private": true,
   "main": "dist/app.js",
   "scripts": {
+    "server": "node dist/server.js",
     "start": "node dist/app.js",
     "build": "tsc",
     "dev": "tsc --watch",
