@@ -1,4 +1,5 @@
 import { Collection, Db, MongoClient } from "mongodb";
+import CryptoJS from "crypto-js";
 
 let client: MongoClient = null;
 let db: Db = null;
@@ -23,24 +24,47 @@ export function closeDB() {
 
 export async function createPasswordDoc(passwordDoc: PasswordDoc) {
   const passwordCollection = await getCollection<PasswordDoc>("passwords");
-  await passwordCollection.insertOne(passwordDoc);
+  const encryptedPasswordDoc = {
+    name: passwordDoc.name,
+    value: encryptPassword(passwordDoc.value),
+  };
+  return await passwordCollection.insertOne(encryptedPasswordDoc);
 }
 
-export async function readPasswordDoc(passwordName: string) {
+export async function readPasswordDoc(
+  passwordName: string
+): Promise<PasswordDoc | null> {
   const passwordCollection = await getCollection<PasswordDoc>("passwords");
-  return await passwordCollection.findOne({ name: passwordName });
+  const passwordDoc = await passwordCollection.findOne({ name: passwordName });
+  if (!passwordDoc) {
+    return null;
+  }
+  return {
+    name: passwordDoc.name,
+    value: decryptPassword(passwordDoc.value),
+  };
 }
 
+export async function updatePasswordDoc(
+  passwordName: string,
+  fieldsToUpdate: Partial<PasswordDoc>
+): Promise<Boolean> {
+  const passwordCollection = await getCollection<PasswordDoc>("passwords");
+  const updateResult = await passwordCollection.updateOne(
+    { name: passwordName },
+    { $set: fieldsToUpdate }
+  );
+  return updateResult.modifiedCount >= 1;
+}
 export async function updatePasswordValue(
   passwordName: string,
   newPasswordValue: string
-) {
-  const passwordCollection = await getCollection("passwords");
-  return await passwordCollection.updateOne(
-    { name: passwordName },
-    { $set: { value: newPasswordValue } }
-  );
+): Promise<Boolean> {
+  return await updatePasswordDoc(passwordName, {
+    value: encryptPassword(newPasswordValue),
+  });
 }
+
 export async function deletePasswordDoc(
   passwordName: string
 ): Promise<Boolean> {
@@ -49,4 +73,13 @@ export async function deletePasswordDoc(
     name: passwordName,
   });
   return deleteResult.deletedCount >= 1;
+}
+
+export function encryptPassword(password: string) {
+  return CryptoJS.AES.encrypt(password, process.env.MASTER_PASSWORD).toString();
+}
+
+export function decryptPassword(ciphertext: string) {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, process.env.MASTER_PASSWORD);
+  return bytes.toString(CryptoJS.enc.Utf8);
 }
