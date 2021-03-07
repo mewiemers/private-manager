@@ -1,5 +1,5 @@
 import { askForPasswordValue, askForPasswordName } from "./questions";
-import { readPasswordDoc, createPasswordDoc, closeDB, connectDB } from "./db";
+import { readPasswordDoc, createPasswordDoc, updatePasswordValue } from "./db";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -13,10 +13,16 @@ export const handleSetPassword = async (
 ): Promise<void> => {
   const passwordname = await askForPasswordName();
   const passwordValue = await askForPasswordValue();
-  await createPasswordDoc({
-    name: passwordname,
-    value: passwordValue,
-  });
+  const passwordDoc = await readPasswordDoc(passwordName);
+  if (passwordDoc) {
+    console.log("Pasword already exists, try another password!");
+    await updatePasswordValue(passwordName, passwordValue);
+  } else {
+    await createPasswordDoc({
+      name: passwordname,
+      value: passwordValue,
+    });
+  }
   console.log(`${passwordName}`);
 };
 
