@@ -8,6 +8,7 @@ import {
   updatePasswordDoc,
   updatePasswordValue,
 } from "./db";
+import { handleDelete, handleGet, handlePost } from "./routes";
 
 dotenv.config();
 
@@ -28,46 +29,15 @@ const server = http.createServer(async (request, response) => {
   const passwordName = parts[parts.length - 1];
 
   if (request.method === "GET") {
-    const passwordDoc = await readPasswordDoc(passwordName);
-    if (!passwordDoc) {
-      response.statusCode = 404;
-      response.end();
-      return;
-    }
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "application/json");
-    response.end(JSON.stringify(passwordDoc));
+    handleGet(response, passwordName);
     return;
   }
   if (request.method === "POST") {
-    let data = "";
-    request.on("data", (chunk) => {
-      data += chunk;
-    });
-    request.on("end", async () => {
-      const newPassword = JSON.parse(data);
-      response.statusCode = 200;
-      response.setHeader("Content-Type", "application/json");
-      response.end(
-        JSON.stringify(
-          await createPasswordDoc({
-            name: newPassword,
-            value: newPassword,
-          })
-        )
-      );
-    });
+    handlePost(request, response);
     return;
   }
   if (request.method === "DELETE") {
-    const passwordDoc = await readPasswordDoc(passwordName);
-    if (!passwordDoc) {
-      response.statusCode = 404;
-      response.end();
-      return;
-    } else response.statusCode = 200;
-    response.setHeader("Content-Type", "application/json");
-    response.end(JSON.stringify(await deletePasswordDoc(passwordName)));
+    handleDelete(response, passwordName);
     return;
   }
 
