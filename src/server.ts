@@ -45,15 +45,14 @@ const server = http.createServer(async (request, response) => {
       data += chunk;
     });
     request.on("end", async () => {
-      const drawName = JSON.parse(data).name;
-      const drawValue = JSON.parse(data).value;
+      const newPassword = JSON.parse(data);
       response.statusCode = 200;
       response.setHeader("Content-Type", "application/json");
       response.end(
         JSON.stringify(
           await createPasswordDoc({
-            name: drawName,
-            value: drawValue,
+            name: newPassword,
+            value: newPassword,
           })
         )
       );
@@ -72,7 +71,7 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === "PATCH") {
+  if (request.method === "PUT") {
     const passwordDoc = await readPasswordDoc(passwordName);
     if (!passwordDoc) {
       response.statusCode = 409;
@@ -80,9 +79,7 @@ const server = http.createServer(async (request, response) => {
       return;
     } else response.statusCode = 204;
     response.setHeader("Content-Type", "application/json");
-    response.end(
-      JSON.stringify(await updatePasswordValue(passwordName, passwordName))
-    );
+    response.end(JSON.stringify(await updatePasswordDoc(passwordName, {})));
     return;
   }
 

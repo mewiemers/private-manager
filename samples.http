@@ -22,3 +22,9 @@ DELETE http://localhost:3333/api/passwords/testnummer2
 ### PATCH a password by name
 
 PUT  http://localhost:3333/api/passwords/testnummer2
+Content-Type: application/json
+
+{
+    "name":"testnummer2",
+    "value":"weristdas"
+}
