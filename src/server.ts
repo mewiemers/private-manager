@@ -18,6 +18,8 @@ const url = process.env.MONGODB_URL;
 connectDB(url, "private-manager-melanie");
 
 const server = http.createServer(async (request, response) => {
+  response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
   if (request.url === "/") {
     response.statusCode = 200;
     response.setHeader("Content-Type", "text/html");
